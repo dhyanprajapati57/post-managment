@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import InputField from "../components/commencomponents/inputfaild";
-import Button from "../components/commencomponents/button";
+import { Button } from "../components/ui/button";
 
 import { loginSchema, type LoginForm } from "../utils/schemas/loginschema";
 
@@ -77,8 +77,7 @@ const Login = () => {
           error={errors.password}
         />
 
-        <Button label="Login" />
-
+            <Button>login</Button>
       </form>
 
       <p>
