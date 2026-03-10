@@ -1,0 +1,12 @@
+//  useSelector = read data from store
+//  useDispatch = send action to Redux
+
+signup data store in cookies and theair data same as login that login other wise not login use jwt token accseestoken
+
+
+user can not accese without login like notlike and dislike if login user can
+use this
+
+i refresh page so login was out 
+
+like dislike function not work prerly
