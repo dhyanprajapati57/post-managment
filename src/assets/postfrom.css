@@ -1,0 +1,51 @@
+.post-form-container{
+
+  display:flex;
+
+  justify-content:center;
+
+  margin-top:40px;
+
+}
+
+.post-form{
+
+  width:450px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:14px;
+
+  background:white;
+
+  padding:25px;
+
+  border-radius:10px;
+
+  box-shadow:0 3px 12px rgba(0,0,0,0.08);
+
+}
+
+.post-form input,
+.post-form textarea{
+
+  padding:10px;
+
+  border:1px solid #d1d5db;
+
+  border-radius:6px;
+
+  font-size:14px;
+
+}
+
+.post-form input:focus,
+.post-form textarea:focus{
+
+  outline:none;
+
+  border-color:#2563eb;
+
+}

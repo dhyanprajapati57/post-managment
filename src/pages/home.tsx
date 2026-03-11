@@ -1,69 +1,70 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react"; // React hooks
+import { useDispatch, useSelector } from "react-redux"; // Redux hooks
 
-import { fetchPosts } from "../redux/postslice";
-import type { RootState, AppDispatch } from "../redux/store";
-import type { Post } from "../types/post.types";
+import { fetchPosts } from "../redux/postslice"; // Redux async thunk
+import type { RootState, AppDispatch } from "../redux/store"; // Types
+import type { Post } from "../types/post.types"; // Post type
 
-import PostCard from "../components/postcard";
-import SearchBar from "../components/searchbar";
-import Filter from "../components/filter";
-import Pagination from "../components/pagination";
-import Loader from "../components/loader";
-import ErrorMessage from "../components/commencomponents/errormsg";
+import PostCard from "../components/postcard"; // Post card component
+import SearchBar from "../components/searchbar"; // Search bar component
+import Filter from "../components/filter"; // Filter by tag
+import Pagination from "../components/pagination"; // Pagination component
+import Loader from "../components/loader"; // Loader component
+import ErrorMessage from "../components/commencomponents/errormsg"; // Error message component
 
 const Home = () => {
-
+  // Redux dispatch
   const dispatch = useDispatch<AppDispatch>();
 
-  const { posts, loading, error } = useSelector(
-    (state: RootState) => state.posts
-  );
+  // Redux state
+  const { posts, loading, error } = useSelector((state: RootState) => state.posts);
 
+  // Local state
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const [tagFilter, setTagFilter] = useState<string>("");
 
+  // Fetch posts on page change
   useEffect(() => {
     dispatch(fetchPosts({ page }));
   }, [dispatch, page]);
 
+  // Show loader while fetching
   if (loading) return <Loader />;
+
+  // Show error if fetch fails
   if (error) return <ErrorMessage message={error} />;
 
+  // Filter posts based on search and tag
   const filteredPosts = posts.filter((post: Post) => {
-
-    const matchSearch = post.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
-
+    const matchSearch = post.title.toLowerCase().includes(search.toLowerCase());
     const matchTag = tagFilter
-      ? post.tags.some((tag) =>
-          tag.toLowerCase().includes(tagFilter.toLowerCase())
-        )
+      ? post.tags.some((tag) => tag.toLowerCase().includes(tagFilter.toLowerCase()))
       : true;
-
     return matchSearch && matchTag;
   });
 
   return (
     <div>
-
-      <div className="input-container ">
+      {/* Filters section */}
+      <div className="filters">
         <SearchBar value={search} onChange={setSearch} />
         <Filter tag={tagFilter} onChange={setTagFilter} />
       </div>
 
+      {/* Posts grid */}
       {filteredPosts.length === 0 ? (
         <p style={{ textAlign: "center" }}>No posts found</p>
       ) : (
-        filteredPosts.map((post: Post) => (
-          <PostCard key={post.id} post={post} />
-        ))
+        <div className="posts-grid">
+          {filteredPosts.map((post: Post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </div>
       )}
 
-      <Pagination page={page} setPage={setPage} />
-
+      {/* Pagination */}
+      <Pagination page={page} setPage={setPage} totalPages={0} />
     </div>
   );
 };

@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import type { RootState } from "../redux/store";
+import { getPostsByUser } from "../services/post.service";
 
 interface Post {
-  id: string;
+  id: number;
   title: string;
   body: string;
   tags: string[];
-  user: string;
 }
 
 const MyPosts = () => {
@@ -16,30 +17,53 @@ const MyPosts = () => {
   const { user } = useSelector((state: RootState) => state.auth);
 
   const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
 
-    const loggedUser = user || localStorage.getItem("authUser");
+    const fetchUserPosts = async () => {
 
-    const allPosts: Post[] = JSON.parse(
-      localStorage.getItem("posts") || "[]"
-    );
+      try {
 
-    const myPosts = allPosts.filter((p) => p.user === loggedUser);
+        const res = await getPostsByUser(5);
+        const apiPosts = res.data.posts;
 
-    setPosts(myPosts);
+        const localPosts = JSON.parse(
+          localStorage.getItem("myPosts") || "[]"
+        );
+
+        setPosts([...apiPosts, ...localPosts]);
+
+      } catch (error) {
+
+        console.error("Error fetching posts", error);
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+    fetchUserPosts();
 
   }, [user]);
 
+  if (loading) return <p style={{ padding: "20px" }}>Loading...</p>;
+
   if (posts.length === 0)
-    return <p style={{ padding: "20px" }}>You have not created any posts yet.</p>;
+    return <p style={{ padding: "20px" }}>No posts found.</p>;
 
   return (
     <div style={{ padding: "20px" }}>
+
       <h2>My Posts</h2>
 
       <ul style={{ listStyle: "none", padding: 0 }}>
+
         {posts.map((p) => (
+
           <li
             key={p.id}
             style={{
@@ -49,8 +73,11 @@ const MyPosts = () => {
               borderRadius: "6px",
             }}
           >
+
             <h3>{p.title}</h3>
+
             <p>{p.body}</p>
+
             <p>Tags: {p.tags.join(", ")}</p>
 
             <Link to={`/post-form/${p.id}`} style={{ color: "#007bff" }}>
@@ -58,8 +85,11 @@ const MyPosts = () => {
             </Link>
 
           </li>
+
         ))}
+
       </ul>
+
     </div>
   );
 };

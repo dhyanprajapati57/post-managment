@@ -6,43 +6,45 @@ import PostDetails from "../pages/postdetails";
 import MyPosts from "../pages/mypost";
 import PostForm from "../pages/postfrom";
 import ProtectedRoute from "./protectedroutes";
+import NotFound from "@/pages/notfound";
 
 const AppRoutes = () => {
   return (
-   <Routes>
-  <Route path="/" element={<Home />} />
-  <Route path="/login" element={<Login />} />
-  <Route path="/signup" element={<Signup />} />
-  <Route path="/posts/:id" element={<PostDetails />} />
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/posts/:id" element={<PostDetails />} />
+      <Route path="*" element={<NotFound />} />
 
-  {/* Protected route for create & edit */}
-  <Route
-    path="/post-form"
-    element={
-      <ProtectedRoute>
-        <PostForm />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-    path="/post-form/:id"
-    element={
-      <ProtectedRoute>
-        <PostForm />
-      </ProtectedRoute>
-    }
-  />
+      {/* Protected route for create & edit */}
+      <Route
+        path="/post-form"
+        element={
+          <ProtectedRoute>
+            <PostForm />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/post-form/:id"
+        element={
+          <ProtectedRoute>
+            <PostForm />
+          </ProtectedRoute>
+        }
+      />
 
-  {/* My Posts */}
-  <Route
-    path="/my-post"
-    element={
-      <ProtectedRoute>
-        <MyPosts />
-      </ProtectedRoute>
-    }
-  />
-</Routes>
+      {/* My Posts */}
+      <Route
+        path="/my-post"
+        element={
+          <ProtectedRoute>
+            <MyPosts />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 };
 

@@ -70,13 +70,24 @@ header.dashboard-header a:hover {
 }
 
 /* --- Post Cards --- */
-.post-card {
-  background-color: white;
-  margin: 1rem 2rem;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.post-card{
+
+  background:#fff;
+
+  border-radius:10px;
+
+  padding:14px;
+
+  /* max-width:260px;   makes card smaller */
+
+  min-height:220px;
+
+  border:1px solid #e5e7eb;
+
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+
+  transition:0.2s;
+
 }
 
 .post-card:hover {
@@ -98,10 +109,24 @@ header.dashboard-header a:hover {
   text-decoration: underline;
 }
 
-.post-body {
-  margin-bottom: 1rem;
-  color: #444;
-  line-height: 1.6;
+.post-body{
+
+  font-size:13px;
+
+  color:#4b5563;
+
+  margin-bottom:10px;
+
+  line-height:1.4;
+
+  display:-webkit-box;
+
+  -webkit-line-clamp:3;   /* show only 3 lines */
+
+  -webkit-box-orient:vertical;
+
+  overflow:hidden;
+
 }
 
 .post-info {
@@ -185,4 +210,19 @@ header.dashboard-header a:hover {
   height: 200px;
   font-size: 1.2rem;
   color: #666;
+}
+  .filters{
+
+  display:flex;
+
+  gap:10px;
+
+  padding:10px 20px;
+
+}
+.posts-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  padding:20px;
 }

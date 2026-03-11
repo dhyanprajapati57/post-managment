@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "../components/commencomponents/confirmmodel";
 import type { Post } from "../types/post.types";
-
+import "../assets/postcard.css"
 interface Props {
   post: Post;
   onDelete?: (id: number) => void;

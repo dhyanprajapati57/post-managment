@@ -1,34 +1,52 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../services/axios.publicapi";
+import { getPost } from "../services/post.service";
 import type { Post } from "../types/post.types";
-import "../assets/postdetail.css"; // import CSS
+
+import "../assets/postdetail.css";
 
 const PostDetails = () => {
+
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
+
     const fetchPost = async () => {
+
       try {
-        const res = await axiosInstance.get(`/posts/${id}`);
-        console.log(res.data);
+
+        const res = await getPost(id!);
+
         setPost(res.data);
-      } catch (error) {
-        console.error("Error:", error);
+
+      } catch (err) {
+
+        console.error(err);
+        setError("Failed to load post");
+
+      } finally {
+
+        setLoading(false);
+
       }
+
     };
 
     fetchPost();
+
   }, [id]);
 
-  if (!post) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="post-details-container">
-      {/* BACK BUTTON */}
+
       <button
         onClick={() => navigate("/")}
         className="back-btn"
@@ -36,10 +54,15 @@ const PostDetails = () => {
         ← Back
       </button>
 
-      <h2>{post.title}</h2>
-      <p>{post.body}</p>
-      <p>Views: {post.views}</p>
-      <p>Tags: {post.tags?.join(", ")}</p>
+      <h2>{post?.title}</h2>
+      <p>{post?.body}</p>
+
+      <p><b>Views:</b> {post?.views}</p>
+
+      <p>
+        <b>Tags:</b> {post?.tags?.join(", ")}
+      </p>
+
     </div>
   );
 };

@@ -12,5 +12,13 @@ export interface Post {
   views: number;
   userId: number;
 }
+
+export interface PostInput {
+  title: string;
+  body: string;
+  tags: string[];
+    userId: number; // add this
+
+}
 //We create types in postTypes.ts because your project uses TypeScript,
 //  and TypeScript needs to know what structure the data has.

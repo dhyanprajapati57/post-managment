@@ -1,49 +1,87 @@
-/* Navbar container */
+/* NAVBAR CONTAINER */
+
 .navbar {
+
   display: flex;
-  justify-content: space-between; /* logo left, links right */
+  justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background-color: #f0f8ff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  padding: 14px 40px;
+
+  background: #1e293b;
+  color: white;
+
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
-/* LEFT SIDE LOGO */
-.navbar-left .navbar-logo {
-  font-weight: 700;
-  font-size: 18px;
-  color: #0a3d62;
+
+/* LOGO */
+
+.navbar-logo {
+
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
+  cursor: pointer;
 }
+
 
 /* RIGHT SIDE LINKS */
+
 .navbar-right {
+
   display: flex;
-  gap: 20px;
   align-items: center;
+  gap: 22px;
+
 }
+
+
+/* NAV LINKS */
 
 .navbar-right a {
+
   text-decoration: none;
-  color: #0a3d62;
+  color: #e2e8f0;
+
+  font-size: 15px;
   font-weight: 500;
-  transition: color 0.3s;
+
+  transition: 0.2s;
 }
+
 
 .navbar-right a:hover {
-  color: #007bff;
+
+  color: #38bdf8;
+
 }
 
-.navbar-right button {
-  padding: 5px 12px;
-  border: none;
-  background-color: #007bff;
+
+/* LOGOUT BUTTON */
+
+.logout-btn {
+
+  background: #ef4444;
   color: white;
-  font-weight: 500;
-  border-radius: 5px;
+
+  border: none;
+  padding: 7px 14px;
+
+  border-radius: 6px;
+
   cursor: pointer;
-  transition: background-color 0.3s;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  transition: 0.2s;
+
 }
 
-.navbar-right button:hover {
-  background-color: #0056b3;
+.logout-btn:hover {
+
+  background: #dc2626;
+
 }

@@ -1,12 +1,14 @@
-interface Props {
+interface ButtonProps {
   label: string;
   onClick?: () => void;
   disabled?: boolean;
+  type?: "button" | "submit" | "reset"; 
 }
 
-const Button = ({ label, onClick, disabled,...props }: Props) => {
+const Button = ({ label, onClick, disabled, type = "button" }: ButtonProps) => {
   return (
     <button
+      type={type}       // set type here explicitly
       onClick={onClick}
       disabled={disabled}
       style={{
@@ -14,7 +16,6 @@ const Button = ({ label, onClick, disabled,...props }: Props) => {
         margin: "5px",
         cursor: "pointer",
       }}
-      {...props}
     >
       {label}
     </button>

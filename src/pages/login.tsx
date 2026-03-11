@@ -8,9 +8,12 @@ import InputField from "../components/commencomponents/inputfaild";
 import { Button } from "../components/ui/button";
 
 import { loginSchema, type LoginForm } from "../utils/schemas/loginschema";
-import "../assets/Login.css"; // import CSS
+import axiosInstance from "../services/axios.publicapi";
+
+import "../assets/Login.css";
 
 const Login = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -22,43 +25,52 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginForm) => {
-    const storedUser = localStorage.getItem("signupUser");
-    if (!storedUser) {
-      alert("Please signup first");
-      return;
-    }
+  const onSubmit = async (data: LoginForm) => {
 
-    const user = JSON.parse(storedUser);
+    try {
 
-    if (user.email === data.email && user.password === data.password) {
-      const token = btoa(`${data.email}:${Date.now()}`);
-      localStorage.setItem("authUser", data.email);
+      const res = await axiosInstance.post("/auth/login", {
+        username: data.username,
+        password: data.password
+      });
+
+      const token = res.data.accessToken;
+
+      // store in localStorage
+      localStorage.setItem("authUser", res.data.username);
       localStorage.setItem("token", token);
 
+      // redux store
       dispatch(
         login({
-          user: data.email,
+          user: res.data.username,
           token
         })
       );
 
       navigate("/");
-    } else {
-      alert("Invalid email or password");
+
+    } catch (error) {
+
+      console.error("Login error:", error);
+      alert("Invalid username or password");
+
     }
+
   };
 
   return (
     <div className="login-container">
+
       <h2>Login</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="login-form">
+
         <InputField
-          type="email"
-          placeholder="Email"
-          register={register("email")}
-          error={errors.email}
+          type="text"
+          placeholder="Username"
+          register={register("username")}
+          error={errors.username}
         />
 
         <InputField
@@ -69,11 +81,13 @@ const Login = () => {
         />
 
         <Button type="submit">Login</Button>
+
       </form>
 
       <p>
         Don't have an account? <Link to="/signup">Signup</Link>
       </p>
+
     </div>
   );
 };

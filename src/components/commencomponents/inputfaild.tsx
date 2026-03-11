@@ -1,4 +1,4 @@
-import type { UseFormRegisterReturn, FieldError } from "react-hook-form";
+import type { FieldError, UseFormRegisterReturn } from "react-hook-form";
 
 interface Props {
   type: string;
@@ -9,14 +9,15 @@ interface Props {
 
 const InputField = ({ type, placeholder, register, error }: Props) => {
   return (
-    <div>
+    <div style={{ marginBottom: "10px" }}>
       <input
         type={type}
         placeholder={placeholder}
+        autoComplete={type === "password" ? "current-password" : "username"}
         {...register}
-        className="input-field"
       />
-      {error && <span className="input-error">{error.message}</span>}
+
+      {error && <p style={{ color: "red" }}>{error.message}</p>}
     </div>
   );
 };

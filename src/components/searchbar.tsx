@@ -8,6 +8,7 @@ interface Props {
 
 const SearchBar = ({ value, onChange }: Props) => {
   return (
+
     <input
       type="text"
       placeholder="Search posts..."
@@ -15,6 +16,7 @@ const SearchBar = ({ value, onChange }: Props) => {
       onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
       className="input-field"
     />
+    
   );
 };
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
-import  Button  from "../components/ui/button";
+import  Button  from "../components/commencomponents/button"
 
 interface Post {
   id: string;
@@ -80,7 +80,7 @@ const CreatePost = () => {
           value={post.tags.join(", ")}
           onChange={handleTagsChange}
         />
-        <Button type="submit">Create Post</Button>
+        <Button type="submit" label="create post">Create Post</Button>
       </form>
     </div>
   );

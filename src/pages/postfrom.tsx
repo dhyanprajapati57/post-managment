@@ -1,92 +1,101 @@
-// src/pages/PostForm.tsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../redux/store";
-import  Button  from "../components/commencomponents/button";
+import { createPost, updatePost, getPost } from "../services/post.service";
+import Button from "../components/commencomponents/button";
+import "../assets/postfrom.css";
 
-interface Post {
-  id: string;
+interface PostFormData {
   title: string;
   body: string;
   tags: string[];
-  user: string;
 }
 
 const PostForm = () => {
-  const { id } = useParams(); // post id for edit
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.auth);
-  // remove properties from a type
-  const [post, setPost] = useState<Omit<Post, "id" | "user">>({
+
+  const [post, setPost] = useState<PostFormData>({
     title: "",
     body: "",
     tags: [],
   });
+  const [loading, setLoading] = useState(false);
 
-  // If editing, load existing post
+  // Load post for editing
   useEffect(() => {
-    if (id) {
-      const allPosts: Post[] = JSON.parse(localStorage.getItem("posts") || "[]");
-      const existingPost = allPosts.find((p) => p.id === id);
+    if (!id) return;
 
-      if (!existingPost || existingPost.user !== user) {
-        alert("You can only edit your own post!");
-        navigate("/my-post");
-        return;
+    const fetchPost = async () => {
+      try {
+        const res = await getPost(id);
+        setPost({
+          title: res.data.title,
+          body: res.data.body,
+          tags: res.data.tags || [],
+        });
+      } catch (error) {
+        console.error("Error loading post", error);
       }
+    };
 
-      setPost({
-        title: existingPost.title,
-        body: existingPost.body,
-        tags: existingPost.tags,
-      });
-    }
-  }, [id, user, navigate]);
+    fetchPost();
+  }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setPost((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPost((prev) => ({ ...prev, tags: e.target.value.split(",").map((t) => t.trim()) }));
+    setPost((prev) => ({
+      ...prev,
+      tags: e.target.value.split(",").map((t) => t.trim()),
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      alert("You must be logged in!");
-      return;
+    try {
+      setLoading(true);
+
+      if (id) {
+        // UPDATE POST via API
+        const res = await updatePost(id, {
+          title: post.title,
+          body: post.body,
+          tags: post.tags,
+          userId: 5, // DummyJSON ignores this, but required
+        });
+        console.log("Updated post:", res.data);
+        alert("Post updated successfully!");
+      } else {
+        // CREATE POST via API
+        const res = await createPost({
+          title: post.title,
+          body: post.body,
+          tags: post.tags,
+          userId: 5,
+        });
+        console.log("Created post:", res.data);
+        alert("Post created successfully!");
+      }
+
+      navigate("/");
+    } catch (error) {
+      console.error("Error saving post", error);
+      alert("Error saving post");
+    } finally {
+      setLoading(false);
     }
-
-    const allPosts: Post[] = JSON.parse(localStorage.getItem("posts") || "[]");
-
-    if (id) {
-      // EDIT
-      const updatedPosts = allPosts.map((p) =>
-        p.id === id && p.user === user ? { ...p, ...post } : p
-      );
-      localStorage.setItem("posts", JSON.stringify(updatedPosts));
-      alert("Post updated successfully!");
-    } else {
-      // CREATE
-      const newPost: Post = { ...post, user, id: Date.now().toString() };
-      allPosts.push(newPost);
-      localStorage.setItem("posts", JSON.stringify(allPosts));
-      alert("Post created successfully!");
-    }
-
-    navigate("/my-post");
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>{id ? "Edit Post" : "Create Post"}</h2>
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: "15px", maxWidth: "500px" }}
-      >
+    <div className="post-form-container">
+      <form onSubmit={handleSubmit} className="post-form">
+        <h2>{id ? "Edit Post" : "Create Post"}</h2>
+
         <input
           type="text"
           name="title"
@@ -95,6 +104,7 @@ const PostForm = () => {
           onChange={handleChange}
           required
         />
+
         <textarea
           name="body"
           placeholder="Body"
@@ -103,14 +113,18 @@ const PostForm = () => {
           rows={6}
           required
         />
+
         <input
           type="text"
-          name="tags"
           placeholder="Tags (comma separated)"
           value={post.tags.join(", ")}
           onChange={handleTagsChange}
         />
-        <Button type="submit" className='text-black' label={id ? "Update Post" : "Create Post"}></Button>
+
+        <Button
+          type="submit"
+          label={loading ? "Saving..." : id ? "Update Post" : "Create Post"}
+        />
       </form>
     </div>
   );
