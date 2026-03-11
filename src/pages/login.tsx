@@ -8,9 +8,9 @@ import InputField from "../components/commencomponents/inputfaild";
 import { Button } from "../components/ui/button";
 
 import { loginSchema, type LoginForm } from "../utils/schemas/loginschema";
+import "../assets/Login.css"; // import CSS
 
 const Login = () => {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,9 +23,7 @@ const Login = () => {
   });
 
   const onSubmit = (data: LoginForm) => {
-
     const storedUser = localStorage.getItem("signupUser");
-
     if (!storedUser) {
       alert("Please signup first");
       return;
@@ -34,11 +32,7 @@ const Login = () => {
     const user = JSON.parse(storedUser);
 
     if (user.email === data.email && user.password === data.password) {
-
-      // eslint-disable-next-line react-hooks/purity
       const token = btoa(`${data.email}:${Date.now()}`);
-      // btoa is a JavaScript built-in function that converts a string into Base64 encoded format.
-
       localStorage.setItem("authUser", data.email);
       localStorage.setItem("token", token);
 
@@ -50,19 +44,16 @@ const Login = () => {
       );
 
       navigate("/");
-
     } else {
       alert("Invalid email or password");
     }
   };
 
   return (
-    <div>
-
+    <div className="login-container">
       <h2>Login</h2>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-
+      <form onSubmit={handleSubmit(onSubmit)} className="login-form">
         <InputField
           type="email"
           placeholder="Email"
@@ -77,13 +68,12 @@ const Login = () => {
           error={errors.password}
         />
 
-            <Button>login</Button>
+        <Button type="submit">Login</Button>
       </form>
 
       <p>
         Don't have an account? <Link to="/signup">Signup</Link>
       </p>
-
     </div>
   );
 };

@@ -10,3 +10,15 @@ use this
 i refresh page so login was out 
 
 like dislike function not work prerly
+helo gpt this is main point then you create one create post page and in the page and edit post button and only own create post 
+only edit not other and create one more route is own post in this page show only user post whos are crreate
+ `/post-form`      Static   Create Post     
+ `/post-form/:id`  Dynamic  Edit Post       
+ `/my-post`        static   user own post
+ this three route and send me changes my other code 
+
+ i click a create post http://localhost:5173/post-form see this link and 
+ You have not created any posts yet. this show me 
+
+  useSelector = read data from store
+//  useDispatch = send action to Redux

@@ -8,9 +8,9 @@ import InputField from "../components/commencomponents/inputfaild";
 import Button from "../components/commencomponents/button";
 
 import { signupSchema, type SignupForm } from "../utils/schemas/signupSchema";
+import "../assets/Signup.css"; // import CSS
 
 const Signup = () => {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,7 +23,6 @@ const Signup = () => {
   });
 
   const onSubmit = (data: SignupForm) => {
-
     localStorage.setItem("signupUser", JSON.stringify(data));
 
     dispatch(
@@ -36,12 +35,10 @@ const Signup = () => {
   };
 
   return (
-    <div>
-
+    <div className="signup-container">
       <h2>Signup</h2>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-
+      <form onSubmit={handleSubmit(onSubmit)} className="signup-form">
         <InputField
           type="text"
           placeholder="Username"
@@ -64,9 +61,7 @@ const Signup = () => {
         />
 
         <Button label="Signup" />
-
       </form>
-
     </div>
   );
 };

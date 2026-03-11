@@ -6,7 +6,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  user: localStorage.getItem("authuser"),
+  user: localStorage.getItem("authuser"),   // match the key used in login/signup
   token: localStorage.getItem("token"),
 };
 
@@ -15,31 +15,25 @@ const authSlice = createSlice({
   initialState,
   reducers: {
 
-    login: (
-      state,
-      action: PayloadAction<{ user: string; token: string }>
-    ) => {
+    login: (state, action: PayloadAction<{ user: string; token: string }>) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
 
-      localStorage.setItem("user", action.payload.user);
+      localStorage.setItem("user", action.payload.user);  // < consistent
       localStorage.setItem("token", action.payload.token);
     },
 
-    signup: (
-      state,
-      action: PayloadAction<{ user: string }>
-    ) => {
+    signup: (state, action: PayloadAction<{ user: string }>) => {
       state.user = action.payload.user;
 
-      localStorage.setItem("user", action.payload.user);
+      localStorage.setItem("user", action.payload.user); //  consistent
     },
 
     logout: (state) => {
       state.user = null;
       state.token = null;
 
-      localStorage.removeItem("user");
+      localStorage.removeItem("user");   //  consistent
       localStorage.removeItem("token");
     },
   },

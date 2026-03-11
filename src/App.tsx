@@ -1,31 +1,12 @@
-import { Routes, Route } from "react-router-dom";
-
+import "./assets/global.css";
 import Navbar from "./components/navbar";
-
-import Home from "./pages/home";
-
-import Login from "./pages/login";
-
-import Signup from "./pages/signup";
-
-import PostDetails from "./pages/postdetails";
-
-
+import AppRoutes from "./routes/approutes";
 
 function App() {
   return (
     <div>
       <Navbar />
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-
-       <Route path="/posts/:id" element={<PostDetails />} />
-
-      </Routes>
+      <AppRoutes />
     </div>
   );
 }

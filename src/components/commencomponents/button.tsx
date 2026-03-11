@@ -4,7 +4,7 @@ interface Props {
   disabled?: boolean;
 }
 
-const Button = ({ label, onClick, disabled }: Props) => {
+const Button = ({ label, onClick, disabled,...props }: Props) => {
   return (
     <button
       onClick={onClick}
@@ -14,6 +14,7 @@ const Button = ({ label, onClick, disabled }: Props) => {
         margin: "5px",
         cursor: "pointer",
       }}
+      {...props}
     >
       {label}
     </button>
