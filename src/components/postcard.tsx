@@ -24,7 +24,7 @@ const PostCard = ({ post, onDelete }: Props) => {
     }
     return true;
   };
-
+  //like-dislike 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click
     if (!checkLogin()) return;
@@ -36,7 +36,7 @@ const PostCard = ({ post, onDelete }: Props) => {
     if (!checkLogin()) return;
     setDislikes(dislikes + 1);
   };
-
+  //delete post
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowModal(true);

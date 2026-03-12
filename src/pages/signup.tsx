@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import InputField from "../components/commencomponents/inputfaild";
 import Button from "../components/commencomponents/button";
+import { toast } from "react-toastify";
 
 import { signupSchema, type SignupForm } from "../utils/schemas/signupSchema";
 import "../assets/Signup.css"; // import CSS
@@ -30,7 +31,7 @@ const Signup = () => {
         user: data.email
       })
     );
-
+     toast.success("Signup successful! Please login");
     navigate("/login");
   };
 
@@ -62,7 +63,7 @@ const Signup = () => {
           error={errors.password}
         />
 
-        <Button label="Signup" />
+        <Button  type="submit" label="Signup" />
       </form>
     </div>
   );

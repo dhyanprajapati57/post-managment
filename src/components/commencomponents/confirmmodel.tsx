@@ -1,3 +1,6 @@
+import Button from "./button";
+import "../../assets/confirmmodal.css";
+
 interface Props {
   message: string;
   onConfirm: () => void;
@@ -5,32 +8,18 @@ interface Props {
 }
 
 const ConfirmModal = ({ message, onConfirm, onCancel }: Props) => {
-
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        background: "rgba(0,0,0,0.5)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <div className="confirm-overlay">
+      <div className="confirm-box">
 
-      <div style={{ background: "white", padding: "20px" }}>
+        <p className="confirm-message">{message}</p>
 
-        <p>{message}</p>
-
-        <button onClick={onConfirm}>Yes</button>
-
-        <button onClick={onCancel}>Cancel</button>
+        <div className="confirm-actions">
+          <Button label="Yes" onClick={onConfirm} />
+          <Button label="Cancel" onClick={onCancel} />
+        </div>
 
       </div>
-
     </div>
   );
 };

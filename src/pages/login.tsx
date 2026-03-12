@@ -9,6 +9,8 @@ import { Button } from "../components/ui/button";
 
 import { loginSchema, type LoginForm } from "../utils/schemas/loginschema";
 import axiosInstance from "../services/axios.publicapi";
+import { toast } from "react-toastify";
+
 
 import "../assets/Login.css";
 
@@ -53,7 +55,7 @@ const Login = () => {
     } catch (error) {
 
       console.error("Login error:", error);
-      alert("Invalid username or password");
+        toast.error("Invalid username or password");
 
     }
 

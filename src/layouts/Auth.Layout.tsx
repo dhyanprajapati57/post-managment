@@ -7,14 +7,15 @@ interface Props {
 }
 
 const AuthLayout = ({ children }: Props) => {
-
+//children means whatever component is inside AuthLayout.
   const { token } = useSelector((state: RootState) => state.auth);
-
+  //redux store->auth->token
   if (!token) {
     return <Navigate to="/login" />;
   }
 
   return <>{children}</>;
+  //Show the protected page
 };
 
 export default AuthLayout;

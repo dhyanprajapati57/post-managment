@@ -226,3 +226,34 @@ header.dashboard-header a:hover {
   gap:20px;
   padding:20px;
 }
+/* Container for the filters */
+.filters {
+  display: flex;
+  gap: 10px;
+}
+
+/* Common style for search, filter inputs and sort button */
+.filters input,
+.filters select,
+.filters button {
+  height: 36px; /* same height */
+  padding: 6px 12px; /* consistent padding */
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Optional: hover effect for inputs and button */
+.filters input:hover,
+.filters select:hover,
+.filters button:hover {
+  border-color: #38bdf8;
+}
+
+/* Optional: make Sort button look clickable */
+.filters select {
+  cursor: pointer;
+  background-color: #fff;
+}

@@ -8,7 +8,7 @@ interface ButtonProps {
 const Button = ({ label, onClick, disabled, type = "button" }: ButtonProps) => {
   return (
     <button
-      type={type}       // set type here explicitly
+      type={type}         // set type here explicitly
       onClick={onClick}
       disabled={disabled}
       style={{
