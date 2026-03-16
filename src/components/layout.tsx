@@ -1,6 +1,4 @@
 // Renders the matching child route of a parent route or nothing if no child route matches.
-
-
 import { Navigate, Outlet } from "react-router-dom";
 import Navbar from "./navbar";
 

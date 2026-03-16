@@ -1,57 +1,48 @@
-import axios from "axios";
+import api from "../services/axios";
 import type { PostInput, Post } from "../types/post.types";
 
-// Create Axios instance for DummyJSON
-const axiosInstance = axios.create({
-  baseURL: "https://dummyjson.com",
-  headers: {
-    "Content-Type": "application/json", // required for PUT/POST
-  },
-});
-
-// GET all posts (supports pagination)
-// export const getPosts = (page: number = 1) => {
-//   return axiosInstance.get(`/posts`, { params: { page } });
-// };
-
-
+// GET all posts
 export const getPosts = (limit: number, skip: number) => {
-  return axiosInstance.get(`/posts?limit=${limit}&skip=${skip}`);
+  return api.get(`/posts?limit=${limit}&skip=${skip}`);
 };
 
-// GET single post by ID
+// GET single post
 export const getPost = (id: string | number) => {
-  return axiosInstance.get(`/posts/${id}`);
+  return api.get(`/posts/${id}`);
 };
 
-// CREATE new post
+// CREATE post
 export const createPost = (data: PostInput) => {
-  return axiosInstance.post<Post>("/posts/add", data);
+  return api.post<Post>("/posts/add", data);
 };
 
-// UPDATE existing post by ID
-export const updatePost = (id: string | number, data: PostInput | any) => {
-  return axiosInstance.put(`/posts/${id}`, data, {
-    headers: { "Content-Type": "application/json" },
-  });
+// UPDATE post
+export const updatePost = (id: string | number, data: PostInput | unknown) => {
+  return api.put(`/posts/${id}`, data);
 };
 
-// GET posts by user (DummyJSON supports /posts/user/:userId)
+// GET posts by user
 export const getPostsByUser = (userId: string | number) => {
-  return axiosInstance.get(`/posts/user/${userId}`);
+  return api.get(`/posts/user/${userId}`);
 };
 
-//shorting 
+// SORT posts
 export const getSortedPosts = (sortBy: string, order: string) => {
-  return axiosInstance.get(`/posts?sortBy=${sortBy}&order=${order}`);
+  return api.get(`/posts?sortBy=${sortBy}&order=${order}`);
 };
 
+// GET comments
 export const getPostComments = (postId: string | number) => {
-  return axiosInstance.get(`/posts/${postId}/comments`);
+  return api.get(`/posts/${postId}/comments`);
 };
 
+// DELETE post
 export const deletePost = (id: number) => {
-  return axios.delete(`https://dummyjson.com/posts/${id}`);
+  return api.delete(`/posts/${id}`);
 };
 
-export default axiosInstance;
+// SEARCH posts
+export const searchPosts = async (query: string): Promise<Post[]> => {
+  const res = await api.get(`/posts/search?q=${query}`);
+  return res.data.posts;
+};

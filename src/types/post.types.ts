@@ -9,7 +9,7 @@ export interface Post {
   body: string;
   tags: string[];
   reactions: Reactions;
-  views: number;
+  views?: number;
   userId: number;
 }
 
@@ -17,8 +17,13 @@ export interface PostInput {
   title: string;
   body: string;
   tags: string[];
-    userId: number; // add this
+    userId: string; // add this
 
+}
+export interface User {
+  id: number;
+  username: string;
+  email: string;
 }
 //We create types in postTypes.ts because your project uses TypeScript,
 //  and TypeScript needs to know what structure the data has.

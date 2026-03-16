@@ -11,24 +11,18 @@ interface Props {
 
 const InputField = ({ type, placeholder, register, error }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
-
   const isPassword = type === "password";
 
   return (
-    <div style={{ marginBottom: "10px", position: "relative", width: "100%" }}>
+    <div className="relative w-full mb-2">
       <input
         type={isPassword && showPassword ? "text" : type}
         placeholder={placeholder}
         autoComplete={isPassword ? "current-password" : "username"}
         {...register}
-        style={{
-          width: "100%",
-          padding: isPassword ? "8px 40px 8px 8px" : "8px", // leave space for eye icon
-          border: "1px solid #ccc",
-          borderRadius: "4px",
-           boxSizing: "border-box",
-            fontSize: "14px",
-        }}
+        className={`w-full p-2 ${
+          isPassword ? "pr-10" : ""
+        } border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
       />
 
       {/* Eye toggle button */}
@@ -36,27 +30,14 @@ const InputField = ({ type, placeholder, register, error }: Props) => {
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          style={{
-            position: "absolute",
-            right: "8px",
-            top: "50%",
-            transform: "translateY(-50%)",
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-            padding: 0,
-          }}
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-0"
         >
-           {showPassword ? (
-            <EyeOff size={20} color="black" />
-          ) : (
-            <Eye size={20} color="black" />
-          )}
+          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
         </button>
       )}
 
       {/* Error message */}
-      {error && <p style={{ color: "red", marginTop: "4px" }}>{error.message}</p>}
+      {error && <p className="text-red-600 mt-1 text-sm">{error.message}</p>}
     </div>
   );
 };

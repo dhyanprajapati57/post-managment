@@ -1,14 +1,14 @@
 import axios from "axios";
 
-const privateApi = axios.create({
+const api = axios.create({
   baseURL: "https://dummyjson.com",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-privateApi.interceptors.request.use((config) => {
-
+// Attach token automatically if it exists
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
   if (token) {
@@ -18,4 +18,4 @@ privateApi.interceptors.request.use((config) => {
   return config;
 });
 
-export default privateApi;
+export default api;

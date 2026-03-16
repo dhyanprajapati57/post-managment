@@ -2,10 +2,10 @@ import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
 import ProtectedRoute from "./protectedroutes";
-import Loader from "../components/loader";
+import Loader from "../components/commen/loader";
 
 // Lazy loaded pages
-const Home = lazy(() => import("../pages/home"));
+const Home = lazy(() => import("../pages/Home"));
 const Login = lazy(() => import("../pages/login"));
 const Signup = lazy(() => import("../pages/signup"));
 const PostDetails = lazy(() => import("../pages/postdetails"));

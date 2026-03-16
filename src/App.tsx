@@ -1,4 +1,5 @@
-import "./assets/global.css";
+import "./App.css";
+
 import Navbar from "./components/navbar";
 import AppRoutes from "./routes/approutes";
 
@@ -10,12 +11,8 @@ function App() {
     <div>
       <Navbar />
       <AppRoutes />
-         {/* Toast Notifications */}
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        theme="colored"
-      />
+      {/* Toast Notifications */}
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
     </div>
   );
 }

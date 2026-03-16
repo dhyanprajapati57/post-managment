@@ -1,111 +1,104 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
-import type { RootState } from "../redux/store";
-import { getPostsByUser, deletePost } from "../services/post.service";
-import Button from "../components/commencomponents/button";
-import ConfirmModal from "../components/commencomponents/confirmmodel";
+import type { RootState, AppDispatch } from "../redux/store";
 
-interface Post {
-  id: number;
-  title: string;
-  body: string;
-  tags: string[];
-}
+import { fetchMyPosts } from "../redux/myPostsSlice";
+import { removePost } from "../redux/deletePostSlice";
+import Button from "../components/commen/button";
+import ConfirmModal from "../components/commen/confirmmodel";
 
 const MyPosts = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
 
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+  // get user id directly (cleaner)
+  const userId = useSelector((state: RootState) => state.auth.user?.id)  as string | undefined;
+
+  const { posts, loading } = useSelector((state: RootState) => state.myPosts);
 
   const [showModal, setShowModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchUserPosts = async () => {
-      try {
-        const res = await getPostsByUser(5);
-        const apiPosts = res.data.posts;
+  // Fetch posts
+ useEffect(() => {
+  if (!userId) return; 
 
-        const localPosts = JSON.parse(localStorage.getItem("myPosts") || "[]");
+  dispatch(fetchMyPosts(userId));
+}, [dispatch, userId]);
 
-        setPosts([...apiPosts, ...localPosts]);
-      } catch (error) {
-        console.error("Error fetching posts", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserPosts();
-  }, [user]);
-
+  // delete post click
   const handleDeleteClick = (id: number) => {
     setSelectedPost(id);
     setShowModal(true);
   };
 
-  const confirmDelete = async () => {
-    if (!selectedPost) return;
+  // confirm delete
+ const confirmDelete = async () => {
+  if (!selectedPost || !userId) return; // guard
 
-    try {
-      await deletePost(selectedPost);
+  try {
+    await dispatch(removePost(selectedPost)); // removePost usually only needs postId
 
-      setPosts(posts.filter((p) => p.id !== selectedPost));
-    } catch (error) {
-      console.error("Delete failed", error);
-    } finally {
-      setShowModal(false);
-      setSelectedPost(null);
-    }
-  };
+    setShowModal(false);
+    setSelectedPost(null);
 
-  if (loading) return <p style={{ padding: "20px" }}>Loading...</p>;
+    // refresh posts safely
+    dispatch(fetchMyPosts(userId));
+  } catch (error) {
+    console.error("Delete failed", error);
+  }
+};
+
+  if (loading)
+    return <p className="p-5 text-center text-gray-600">Loading...</p>;
 
   if (posts.length === 0)
-    return <p style={{ padding: "20px" }}>No posts found.</p>;
+    return <p className="p-5 text-center text-gray-600">No posts found.</p>;
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>My Posts</h2>
+    <div className="p-5">
+      <h2 className="text-2xl font-semibold text-gray-800 mb-5">My Posts</h2>
 
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {posts?.map((p) => (
-          <li
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {posts.map((p) => (
+          <div
             key={p.id}
-            style={{
-              marginBottom: "15px",
-              padding: "10px",
-              border: "1px solid #007bff",
-              borderRadius: "6px",
-            }}
+            className="border border-blue-600 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
           >
-            <p>
-              <b>ID:</b> {p.id}
-            </p>
-            <h3>{p.title}</h3>
-            <p>{p.body}</p>
-            <p>Tags: {p.tags.join(", ")}</p>
-            <Link
-              to={`/post-form/${p.id}`}
-              style={{ color: "#007bff", marginRight: "10px" }}
-            >
-              Edit
-            </Link>
-            <Button label="Delete" onClick={() => handleDeleteClick(p.id)} />
-          </li>
-        ))}
-      </ul>
+            <h3 className="font-semibold text-lg mb-2">
+              {p.id}. {p.title}
+            </h3>
 
-      {showModal && (
-        <ConfirmModal
-          message="Are you sure you want to delete this post?"
-          onConfirm={confirmDelete}
-          onCancel={() => setShowModal(false)}
-        />
-      )}
+            <p className="text-gray-700 mb-2">{p.body}</p>
+
+            <p className="text-sm text-gray-600 mb-3">
+              Tags: {p.tags?.join(", ")}
+            </p>
+
+            <div className="flex items-center gap-3">
+              <Link
+                to={`/post-form/${p.id}`}
+                className="text-blue-600 hover:underline"
+              >
+                Edit
+              </Link>
+
+              <Button
+                label="Delete"
+                onClick={() => handleDeleteClick(p.id)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <ConfirmModal
+        message="Are you sure you want to delete this post?"
+        onConfirm={confirmDelete}
+        onCancel={() => setShowModal(false)}
+        showModal={showModal}
+      />
     </div>
   );
 };

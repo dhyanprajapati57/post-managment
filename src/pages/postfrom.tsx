@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { createPost, updatePost, getPost } from "../services/post.service";
-import Button from "../components/commencomponents/button";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../redux/store";
+
+import { createNewPost } from "../redux/createpostslice";
+import { editPost } from "../redux/editPostSlice";
+
+import { getPost } from "../services/post.service";
+
 import { toast } from "react-toastify";
-import "../assets/postfrom.css";
-//structure of postdata
+import Button from "../components/commen/button";
+
+// Define form data type
 interface PostFormData {
   title: string;
   body: string;
@@ -14,22 +21,27 @@ interface PostFormData {
 const PostForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  //adtastore
+  const dispatch = useDispatch<AppDispatch>();
+
+  // Get logged-in user ID from auth slice
+  const userId = useSelector((state: RootState) => state.auth.user?.id);
+
   const [post, setPost] = useState<PostFormData>({
     title: "",
     body: "",
     tags: [],
   });
- //saving
+
   const [loading, setLoading] = useState(false);
 
-  // if no id cretepost
+  // Load post if editing
   useEffect(() => {
     if (!id) return;
 
     const fetchPost = async () => {
       try {
         const res = await getPost(id);
+
         setPost({
           title: res.data.title,
           body: res.data.body,
@@ -43,14 +55,20 @@ const PostForm = () => {
 
     fetchPost();
   }, [id]);
-  //handle tital body changes
+
+  // Handle input changes for title & body
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setPost((prev) => ({ ...prev, [name]: value }));
+
+    setPost((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
-    //maping post tag
+
+  // Handle tags input
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPost((prev) => ({
       ...prev,
@@ -58,49 +76,46 @@ const PostForm = () => {
     }));
   };
 
+  // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      setLoading(true);
-     //if id so edit post
-      if (id) {
-        // UPDATE POST
-        const res = await updatePost(id, {
-          title: post.title,
-          body: post.body,
-          tags: post.tags,
-          userId: 5,
-        });
+  if (!userId) {
+    toast.error("You must be logged in to create or edit a post");
+    return;
+  }
 
-        console.log("Updated post:", res.data);
-        toast.success("Post updated successfully!");
-      } else {
-        // CREATE POST
-        const res = await createPost({
-          title: post.title,
-          body: post.body,
-          tags: post.tags,
-          userId: 5,
-        });
+  const currentUserId: string = userId; // TypeScript now knows it's string
 
-        console.log("Created post:", res.data);
-        toast.success("Post created successfully!");
-      }
+  try {
+    setLoading(true);
 
-      navigate("/");
-    } catch (error) {
-      console.error("Error saving post", error);
-      toast.error("Error saving post");
-    } finally {
-      setLoading(false);
+    if (id) {
+      await dispatch(editPost(id, { ...post, userId: currentUserId }));
+      toast.success("Post updated successfully!");
+    } else {
+      await dispatch(createNewPost({ ...post, userId: currentUserId }));
+      toast.success("Post created successfully!");
     }
-  };
 
+    navigate("/");
+  } catch (error) {
+    console.error("Error saving post", error);
+    toast.error("Error saving post");
+  } finally {
+    setLoading(false);
+  }
+};
+  
   return (
-    <div className="post-form-container">
-      <form onSubmit={handleSubmit} className="post-form">
-        <h2>{id ? "Edit Post" : "Create Post"}</h2>
+    <div className="flex justify-center mt-10">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md"
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          {id ? "Edit Post" : "Create Post"}
+        </h2>
 
         <input
           type="text"
@@ -109,6 +124,7 @@ const PostForm = () => {
           value={post.title}
           onChange={handleChange}
           required
+          className="border border-blue-500 rounded-md p-3 focus:outline-none focus:border-red-700"
         />
 
         <textarea
@@ -118,6 +134,7 @@ const PostForm = () => {
           onChange={handleChange}
           rows={6}
           required
+          className="border border-blue-500 rounded-md p-3 focus:outline-none focus:border-red-600"
         />
 
         <input
@@ -125,6 +142,7 @@ const PostForm = () => {
           placeholder="Tags (comma separated)"
           value={post.tags.join(", ")}
           onChange={handleTagsChange}
+          className="border border-blue-500 rounded-md p-3 focus:outline-none focus:border-red-600"
         />
 
         <Button

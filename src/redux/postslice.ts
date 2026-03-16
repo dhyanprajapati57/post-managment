@@ -1,81 +1,83 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getPosts } from "../services/post.service";
+import { createSlice } from "@reduxjs/toolkit";
+import { getPosts, getSortedPosts } from "../services/post.service"; // API calls
+import type { AppDispatch } from "../redux/store";
 import type { Post } from "../types/post.types";
-import { getSortedPosts } from "../services/post.service";
-interface PostState {
+
+// Define the state for posts
+
+interface PostsState {
   posts: Post[];
   loading: boolean;
   error: string | null;
 }
 
-const initialState: PostState = {
+// Initial state
+const initialState: PostsState = {
   posts: [],
   loading: false,
   error: null,
 };
-//old logic page post pagination
-export const fetchPosts = createAsyncThunk(
-  "posts/fetchPosts",
-  async ({ page }: { page: number }) => {
-    const limit = 30;
-    const skip = (page - 1) * limit;
-    
-    const res = await getPosts(limit,skip);
 
-    return res.data.posts;
-  }
-);
-
-// export const fetchPosts = createAsyncThunk(
-//   "posts/fetchPosts",
-//   async (page: number) => {
-//     const limit = 30;
-//     const skip = (page - 1) * limit;
-
-//     const res = await axios.get(
-//       `https://dummyjson.com/posts?limit=${limit}&skip=${skip}`
-//     );
-
-//     return res.data.posts;
-//   }
-// );
-export const fetchSortedPosts = createAsyncThunk(
-  "posts/fetchSortedPosts",
-  async ({ sortBy, order }: { sortBy: string; order: string }) => {
-    const res = await getSortedPosts(sortBy, order);
-    return res.data.posts;
-  }
-);
-
-
-
-
-const postSlice = createSlice({
+// Create the slice
+const postsSlice = createSlice({
   name: "posts",
   initialState,
-  reducers: {},
-
-  extraReducers: (builder) => {
-
-    builder.addCase(fetchPosts.pending, (state) => {
+  reducers: {
+    // Start fetching posts
+    fetchStart: (state) => {
       state.loading = true;
       state.error = null;
-    });
+    },
 
-    builder.addCase(fetchPosts.fulfilled, (state, action) => {
-      state.loading = false;
+    fetchSuccess: (state, action) => {
       state.posts = action.payload;
-    });
-
-    builder.addCase(fetchPosts.rejected, (state) => {
       state.loading = false;
-      state.error = "Failed to fetch posts";
-    });
-    builder.addCase(fetchSortedPosts.fulfilled, (state, action) => {
-  state.posts = action.payload;
-});
-
+      state.error = null;
+    },
+    fetchFailure: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
   },
 });
 
-export default postSlice.reducer;
+// Export reducetr actions to use in components
+export const { fetchStart, fetchSuccess, fetchFailure } = postsSlice.actions;
+export default postsSlice.reducer;
+
+// Async thunk to fetch paginated posts
+export const fetchPosts = (page: number) => async (dispatch: AppDispatch) => {
+  dispatch(fetchStart());
+
+  try {
+    const limit = 30;
+    const skip = (page - 1) * limit;
+
+    const res = await getPosts(limit, skip);
+    dispatch(fetchSuccess(res.data.posts));
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      dispatch(fetchFailure(err.message));
+    } else {
+      dispatch(fetchFailure("Something went wrong"));
+    }
+  }
+};
+
+// Async thunk to fetch sorted posts
+export const fetchSortedPosts =
+  (sortBy: string, order: string) => async (dispatch: AppDispatch) => {
+    dispatch(fetchStart()); // start loader
+
+    try {
+      const res = await getSortedPosts(sortBy, order); // API call
+      dispatch(fetchSuccess(res.data.posts)); // dispatch success
+    } catch (err: unknown) {
+      // handle error safely
+      if (err instanceof Error) {
+        dispatch(fetchFailure(err.message));
+      } else {
+        dispatch(fetchFailure("Something went wrong"));
+      }
+    }
+  };

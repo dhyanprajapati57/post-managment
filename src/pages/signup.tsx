@@ -1,20 +1,16 @@
-import { useDispatch } from "react-redux";
-import { signup } from "../redux/authslice";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import InputField from "../components/commencomponents/inputfaild";
-import Button from "../components/commencomponents/button";
 import { toast } from "react-toastify";
 
+import InputField from "../components/commen/inputfaild";
+import Button from "../components/commen/button";
+
 import { signupSchema, type SignupForm } from "../utils/schemas/signupSchema";
-import "../assets/Signup.css"; // import CSS
 
 const Signup = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  //react hook fromwith zod
   const {
     register,
     handleSubmit,
@@ -24,23 +20,22 @@ const Signup = () => {
   });
 
   const onSubmit = (data: SignupForm) => {
+    // Save signup user in localStorage
     localStorage.setItem("signupUser", JSON.stringify(data));
 
-    dispatch(
-      signup({
-        user: data.email
-      })
-    );
-     toast.success("Signup successful! Please login");
+    toast.success("Signup successful! Please login");
     navigate("/login");
   };
 
   return (
-    <div className="signup-container">
-
-     
-      <form onSubmit={handleSubmit(onSubmit)} className="signup-form">
-              <h2 className="form-title">Signup</h2>
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-md flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md"
+      >
+        <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">
+          Signup
+        </h2>
 
         <InputField
           type="text"
@@ -63,7 +58,7 @@ const Signup = () => {
           error={errors.password}
         />
 
-        <Button  type="submit" label="Signup" />
+        <Button type="submit" label="Signup" />
       </form>
     </div>
   );
