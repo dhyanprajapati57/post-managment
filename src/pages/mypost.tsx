@@ -12,20 +12,20 @@ import ConfirmModal from "../components/commen/confirmmodel";
 const MyPosts = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  // get user id directly (cleaner)
-  const userId = useSelector((state: RootState) => state.auth.user?.id)  as string | undefined;
+  // get user id safely
+  const userId = useSelector((state: RootState) => state.auth.user?.id) as string | undefined;
 
-  const { posts, loading } = useSelector((state: RootState) => state.myPosts);
+  // get posts safely
+  const { posts, loading } = useSelector((state: RootState) => state.myPosts ?? { posts: [], loading: false });
 
   const [showModal, setShowModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<number | null>(null);
 
   // Fetch posts
- useEffect(() => {
-  if (!userId) return; 
-
-  dispatch(fetchMyPosts(userId));
-}, [dispatch, userId]);
+  useEffect(() => {
+    if (!userId) return; 
+    dispatch(fetchMyPosts(userId));
+  }, [dispatch, userId]);
 
   // delete post click
   const handleDeleteClick = (id: number) => {
@@ -34,51 +34,48 @@ const MyPosts = () => {
   };
 
   // confirm delete
- const confirmDelete = async () => {
-  if (!selectedPost || !userId) return; // guard
+  const confirmDelete = async () => {
+    if (!selectedPost || !userId) return; // guard
 
-  try {
-    await dispatch(removePost(selectedPost)); // removePost usually only needs postId
+    try {
+      await dispatch(removePost(selectedPost)); // usually only needs postId
+      setShowModal(false);
+      setSelectedPost(null);
 
-    setShowModal(false);
-    setSelectedPost(null);
+      // refresh posts safely
+      dispatch(fetchMyPosts(userId));
+    } catch (error) {
+      console.error("Delete failed", error);
+    }
+  };
 
-    // refresh posts safely
-    dispatch(fetchMyPosts(userId));
-  } catch (error) {
-    console.error("Delete failed", error);
-  }
-};
+  if (loading) return <p className="p-5 text-center text-gray-600">Loading...</p>;
 
-  if (loading)
-    return <p className="p-5 text-center text-gray-600">Loading...</p>;
-
-  if (posts.length === 0)
-    return <p className="p-5 text-center text-gray-600">No posts found.</p>;
+  if (!posts?.length) return <p className="p-5 text-center text-gray-600">No posts found.</p>;
 
   return (
     <div className="p-5">
       <h2 className="text-2xl font-semibold text-gray-800 mb-5">My Posts</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {posts.map((p) => (
+        {posts?.map((p) => (
           <div
-            key={p.id}
+            key={p?.id}
             className="border border-blue-600 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
           >
             <h3 className="font-semibold text-lg mb-2">
-              {p.id}. {p.title}
+              {p?.id}. {p?.title}
             </h3>
 
-            <p className="text-gray-700 mb-2">{p.body}</p>
+            <p className="text-gray-700 mb-2">{p?.body}</p>
 
             <p className="text-sm text-gray-600 mb-3">
-              Tags: {p.tags?.join(", ")}
+              Tags: {p?.tags?.join(", ")}
             </p>
 
             <div className="flex items-center gap-3">
               <Link
-                to={`/post-form/${p.id}`}
+                to={`/post-form/${p?.id}`}
                 className="text-blue-600 hover:underline"
               >
                 Edit
@@ -86,7 +83,7 @@ const MyPosts = () => {
 
               <Button
                 label="Delete"
-                onClick={() => handleDeleteClick(p.id)}
+                onClick={() => handleDeleteClick(p?.id ?? 0)}
               />
             </div>
           </div>

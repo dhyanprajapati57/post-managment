@@ -48,16 +48,16 @@ const PostCard = ({ post, onDelete }: Props) => {
 
   return (
     <div
-     className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-200 cursor-pointer"
+      className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-200 cursor-pointer"
       onClick={() => navigate(`/posts/${post.id}`)}
     >
       {/* Post title */}
       <h3 className="text-lg font-semibold text-gray-900 mb-2">{post.title}</h3>
 
       {/* Post body */}
-    <p className="text-gray-600 text-sm mb-3 leading-relaxed line-clamp-3">
-  {post.body}
-</p>
+      <p className="text-gray-600 text-sm mb-3 leading-relaxed line-clamp-3">
+        {post.body}
+      </p>
 
       {/* Post info */}
       <p className="text-gray-500 text-xs mb-4">
@@ -76,7 +76,7 @@ const PostCard = ({ post, onDelete }: Props) => {
         </button>
 
         <button
-         className="flex items-center gap-1 bg-red-100 text-red-700 text-xs px-3 py-1 rounded-md hover:bg-red-200 transition"
+          className="flex items-center gap-1 bg-red-100 text-red-700 text-xs px-3 py-1 rounded-md hover:bg-red-200 transition"
           onClick={handleDislike}
         >
           <ThumbsDown size={14} />
@@ -85,7 +85,7 @@ const PostCard = ({ post, onDelete }: Props) => {
 
         {onDelete && (
           <button
-          className="bg-red-500 text-white text-xs px-3 py-1 rounded-md hover:bg-red-600 transition"
+            className="bg-red-500 text-white text-xs px-3 py-1 rounded-md hover:bg-red-600 transition"
             onClick={handleDelete}
           >
             Delete

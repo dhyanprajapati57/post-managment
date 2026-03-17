@@ -15,46 +15,87 @@ const NotFound = lazy(() => import("../pages/notfound"));
 
 const AppRoutes = () => {
   return (
-    <Suspense fallback={<Loader />}>
-      <Routes>
+    <Routes>
 
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/posts/:id" element={<PostDetails />} />
-        <Route path="*" element={<NotFound />} />
+      <Route
+        path="/"
+        element={
+          <Suspense fallback={<Loader />}>
+            <Home />
+          </Suspense>
+        }
+      />
 
-        {/* Protected route for create & edit */}
-        <Route
-          path="/post-form"
-          element={
-            <ProtectedRoute>
+      <Route
+        path="/login"
+        element={
+          <Suspense fallback={<Loader />}>
+            <Login />
+          </Suspense>
+        }
+      />
+
+      <Route
+        path="/signup"
+        element={
+          <Suspense fallback={<Loader />}>
+            <Signup />
+          </Suspense>
+        }
+      />
+
+      <Route
+        path="/posts/:id"
+        element={
+          <Suspense fallback={<Loader />}>
+            <PostDetails />
+          </Suspense>
+        }
+      />
+
+      <Route
+        path="/post-form"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loader />}>
               <PostForm />
-            </ProtectedRoute>
-          }
-        />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
 
-        <Route
-          path="/post-form/:id"
-          element={
-            <ProtectedRoute>
+      <Route
+        path="/post-form/:id"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loader />}>
               <PostForm />
-            </ProtectedRoute>
-          }
-        />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
 
-        {/* My Posts */}
-        <Route
-          path="/my-post"
-          element={
-            <ProtectedRoute>
+      <Route
+        path="/my-post"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<Loader />}>
               <MyPosts />
-            </ProtectedRoute>
-          }
-        />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
 
-      </Routes>
-    </Suspense>
+      <Route
+        path="*"
+        element={
+          <Suspense fallback={<Loader />}>
+            <NotFound />
+          </Suspense>
+        }
+      />
+
+    </Routes>
   );
 };
 

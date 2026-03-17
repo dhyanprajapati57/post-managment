@@ -5,13 +5,12 @@ import type { AppDispatch, RootState } from "../redux/store";
 
 import { createNewPost } from "../redux/createpostslice";
 import { editPost } from "../redux/editPostSlice";
-
 import { getPost } from "../services/post.service";
-
 import { toast } from "react-toastify";
-import Button from "../components/commen/button";
 
-// Define form data type
+import Button from "../components/commen/button";
+import InputField from "../components/commen/inputfaild";
+
 interface PostFormData {
   title: string;
   body: string;
@@ -22,8 +21,6 @@ const PostForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-
-  // Get logged-in user ID from auth slice
   const userId = useSelector((state: RootState) => state.auth.user?.id);
 
   const [post, setPost] = useState<PostFormData>({
@@ -31,7 +28,6 @@ const PostForm = () => {
     body: "",
     tags: [],
   });
-
   const [loading, setLoading] = useState(false);
 
   // Load post if editing
@@ -41,11 +37,10 @@ const PostForm = () => {
     const fetchPost = async () => {
       try {
         const res = await getPost(id);
-
         setPost({
-          title: res.data.title,
-          body: res.data.body,
-          tags: res.data.tags || [],
+          title: res?.data?.title ?? "",
+          body: res?.data?.body ?? "",
+          tags: res?.data?.tags ?? [],
         });
       } catch (error) {
         console.error("Error loading post", error);
@@ -56,57 +51,47 @@ const PostForm = () => {
     fetchPost();
   }, [id]);
 
-  // Handle input changes for title & body
+  // Generic handler for title/body
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    setPost((prev) => ({ ...prev, [name]: value }));
+  };
 
+  // Handler for tags
+  const handleTagsChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setPost((prev) => ({
       ...prev,
-      [name]: value,
+      tags: e.target.value?.split(",").map((t) => t?.trim()) ?? [],
     }));
   };
 
-  // Handle tags input
-  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPost((prev) => ({
-      ...prev,
-      tags: e.target.value.split(",").map((t) => t.trim()),
-    }));
-  };
-
-  // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
+    if (!userId)
+      return toast.error("You must be logged in to create or edit a post");
 
-  if (!userId) {
-    toast.error("You must be logged in to create or edit a post");
-    return;
-  }
-
-  const currentUserId: string = userId; // TypeScript now knows it's string
-
-  try {
-    setLoading(true);
-
-    if (id) {
-      await dispatch(editPost(id, { ...post, userId: currentUserId }));
-      toast.success("Post updated successfully!");
-    } else {
-      await dispatch(createNewPost({ ...post, userId: currentUserId }));
-      toast.success("Post created successfully!");
+    try {
+      setLoading(true);
+      if (id) {
+        await dispatch(editPost(id, { ...post, userId }));
+        toast.success("Post updated successfully!");
+      } else {
+        await dispatch(createNewPost({ ...post, userId }));
+        toast.success("Post created successfully!");
+      }
+      navigate("/");
+    } catch (error) {
+      console.error("Error saving post", error);
+      toast.error("Error saving post");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    navigate("/");
-  } catch (error) {
-    console.error("Error saving post", error);
-    toast.error("Error saving post");
-  } finally {
-    setLoading(false);
-  }
-};
-  
   return (
     <div className="flex justify-center mt-10">
       <form
@@ -117,32 +102,30 @@ const PostForm = () => {
           {id ? "Edit Post" : "Create Post"}
         </h2>
 
-        <input
+        {/* Title input */}
+        <InputField
           type="text"
-          name="title"
           placeholder="Title"
-          value={post.title}
+          value={post?.title ?? ""}
           onChange={handleChange}
-          required
-          className="border border-blue-500 rounded-md p-3 focus:outline-none focus:border-red-700"
+          isTextarea={false}
         />
 
-        <textarea
-          name="body"
+        {/* Body textarea */}
+        <InputField
+          type="text"
           placeholder="Body"
-          value={post.body}
+          value={post?.body ?? ""}
           onChange={handleChange}
-          rows={6}
-          required
-          className="border border-blue-500 rounded-md p-3 focus:outline-none focus:border-red-600"
+          isTextarea
         />
 
-        <input
+        {/* Tags input */}
+        <InputField
           type="text"
           placeholder="Tags (comma separated)"
-          value={post.tags.join(", ")}
+          value={post?.tags?.join(", ") ?? ""}
           onChange={handleTagsChange}
-          className="border border-blue-500 rounded-md p-3 focus:outline-none focus:border-red-600"
         />
 
         <Button

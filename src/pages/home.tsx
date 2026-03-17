@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { fetchPosts, fetchSortedPosts } from "../redux/postslice";
-import { fetchSearchPosts, clearSearch } from "../redux/serchslice"; // search slice
+import { fetchSearchPosts, clearSearch } from "../redux/serchslice";
 import type { RootState, AppDispatch } from "../redux/store";
 import type { Post } from "../types/post.types";
 
@@ -16,79 +16,72 @@ import useDebounce from "../hooks/usedebounce";
 
 const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
-  // Get posts state from Redux store
-  const {
-    posts: defaultPosts,
-    loading: postsLoading,
-    error: postsError,
-  } = useSelector((state: RootState) => state.posts);
-  //serch post
-  const {
-    posts: searchPosts,
-    loading: searchLoading,
-    error: searchError,
-  } = useSelector((state: RootState) => state.search);
-  //use pagination
-  const [page, setPage] = useState<number>(1);
-  //input value
-  const [search, setSearch] = useState<string>("");
-  const [tagFilter, setTagFilter] = useState<string>("");
-  const [sortOrder, setSortOrder] = useState<string>("");
 
-  const debouncedSearch = useDebounce(search, 500); // use hook
+  const { posts: defaultPosts, loading: postsLoading, error: postsError } =
+    useSelector((state: RootState) => state.posts);
 
-  // Fetch default posts for current page
+  const { posts: searchPosts, loading: searchLoading, error: searchError } =
+    useSelector((state: RootState) => state.search);
+
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [tagFilter, setTagFilter] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
+
+  const debouncedSearch = useDebounce(search, 500);
+  const query = debouncedSearch.trim();
+
+  // Fetch posts
   useEffect(() => {
-    if (debouncedSearch.trim() === "") {
+    if (!query) {
       dispatch(fetchPosts(page));
       dispatch(clearSearch());
     }
-  }, [dispatch, page, debouncedSearch]);
+  }, [dispatch, page, query]);
 
-  // Fetch sorted posts
+  // Sort
   useEffect(() => {
     if (sortOrder) {
       dispatch(fetchSortedPosts("title", sortOrder));
     }
   }, [dispatch, sortOrder]);
 
-  // Fetch search results when debounced value changes
+  // Search
   useEffect(() => {
-    const query = debouncedSearch.trim();
-
-    if (query !== "") {
-      console.log("Calling search API with:", query);
+    if (query) {
       dispatch(fetchSearchPosts(query));
     }
-  }, [debouncedSearch, dispatch]);
-  const isSearching = debouncedSearch.trim().length > 0;
+  }, [dispatch, query]);
 
-  const postsToDisplay = isSearching ? searchPosts : defaultPosts;
+  const isSearching = Boolean(query);
+
+  const posts = isSearching ? searchPosts : defaultPosts;
   const loading = isSearching ? searchLoading : postsLoading;
   const error = isSearching ? searchError : postsError;
 
-  // Filter by tag
-  const filteredPosts = postsToDisplay.filter((post: Post) =>
-    tagFilter
-      ? post.tags.some((tag) =>
-          tag.toLowerCase().includes(tagFilter.toLowerCase()),
-        )
-      : true,
-  );
+  // Filter (clean + optimized)
+  const filteredPosts = useMemo(() => {
+    if (!tagFilter) return posts;
+
+    return posts.filter((post: Post) =>
+      post.tags.some((tag) =>
+        tag.toLowerCase().includes(tagFilter.toLowerCase())
+      )
+    );
+  }, [posts, tagFilter]);
 
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error} />;
 
   return (
     <div className="max-w-7xl mx-auto px-4">
-      {" "}
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 py-4">
-        {" "}
         <SearchBar value={search} onChange={setSearch} />
         <Filter tag={tagFilter} onChange={setTagFilter} />
+
         <select
-          className="h-10 px-3 rounded-md border border-gray-300  bg-gray-100 text-sm cursor-pointer focus:outline-none focus:border-sky-400"
+          className="h-10 px-3 rounded-md border bg-gray-100 text-sm"
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
         >
@@ -97,11 +90,10 @@ const Home = () => {
           <option value="desc">Title Z-A</option>
         </select>
       </div>
-      {/* Posts Grid */}
+
+      {/* Posts */}
       {filteredPosts.length === 0 ? (
-        <p className="text-center text-gray-500 py-10 text-lg">
-          No posts found
-        </p>
+        <p className="text-center text-gray-500 py-10">No posts found</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.map((post: Post) => (
@@ -109,6 +101,7 @@ const Home = () => {
           ))}
         </div>
       )}
+
       {/* Pagination */}
       <div className="flex justify-center mt-8">
         <Pagination page={page} setPage={setPage} totalPages={10} />

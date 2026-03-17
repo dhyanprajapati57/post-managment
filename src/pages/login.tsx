@@ -13,9 +13,8 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const dispatch = useDispatch();
-  //router navigation
   const navigate = useNavigate();
-  //hook from setup
+
   const {
     register,
     handleSubmit,
@@ -24,35 +23,6 @@ const Login = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  // const onSubmit = async (data: LoginForm) => {
-  //   try {
-  //     const res = await axiosInstance.post("/auth/login", {
-  //       username: data.username,
-  //       password: data.password,
-  //     });
-
-  //     const token = res.data.accessToken;
-
-  //     // store in localStorage
-  //     localStorage.setItem("authUser", res.data.username);
-  //     localStorage.setItem("token", token);
-
-  //     // redux store
-  //     dispatch(
-  //       login({
-  //         user: res.data.username,
-  //         token,
-  //       })
-  //     );
-
-  //     navigate("/");
-  //   } catch (error) {
-  //     console.error("Login error:", error);
-  //     toast.error("Invalid username or password");
-  //   }
-  // };
-
-  //run when submit
   const onSubmit = async (data: LoginForm) => {
     try {
       // Send login request to API
@@ -63,30 +33,29 @@ const Login = () => {
 
       console.log(res.data);
 
-      //token api response
-      const token = res.data.accessToken;
-      // Create user object using API response
+      // Optional chaining to safely access API response
+      const token = res?.data?.accessToken;
       const user = {
-         id: res.data.id,  // <-- must match API
-        name: res.data.firstName + " " + res.data.lastName,
-        email: res.data.email,
-        username: res.data.username,
-        gender: res.data.gender,
-        image: res.data.image,
+        id: res?.data?.id, // safe access
+        name: `${res?.data?.firstName ?? ""} ${res?.data?.lastName ?? ""}`,
+        email: res?.data?.email,
+        username: res?.data?.username,
+        gender: res?.data?.gender,
+        image: res?.data?.image,
         role: "User",
       };
 
-      localStorage.setItem("authuser", JSON.stringify(user));
-      localStorage.setItem("token", token);
-      //save in redux store
-      dispatch(
-        login({
-          user,
-          token,
-        }),
-      );
+      // Save to localStorage safely
+      if (user?.id && token) {
+        localStorage.setItem("authuser", JSON.stringify(user));
+        localStorage.setItem("token", token);
 
-      navigate("/");
+        // Save in Redux store
+        dispatch(login({ user, token }));
+        navigate("/");
+      } else {
+        toast.error("Invalid login response from server");
+      }
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Invalid username or password");
@@ -105,14 +74,14 @@ const Login = () => {
           type="text"
           placeholder="Username"
           register={register("username")}
-          error={errors.username}
+          error={errors?.username} // optional chaining
         />
 
         <InputField
           type="password"
           placeholder="Password"
           register={register("password")}
-          error={errors.password}
+          error={errors?.password} // optional chaining
         />
 
         <Button

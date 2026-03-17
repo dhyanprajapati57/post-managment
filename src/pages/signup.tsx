@@ -10,7 +10,7 @@ import { signupSchema, type SignupForm } from "../utils/schemas/signupSchema";
 
 const Signup = () => {
   const navigate = useNavigate();
-  //react hook fromwith zod
+
   const {
     register,
     handleSubmit,
@@ -41,21 +41,21 @@ const Signup = () => {
           type="text"
           placeholder="Username"
           register={register("username")}
-          error={errors.username}
+          error={errors?.username} // optional chaining
         />
 
         <InputField
           type="email"
           placeholder="Email"
           register={register("email")}
-          error={errors.email}
+          error={errors?.email} // optional chaining
         />
 
         <InputField
           type="password"
           placeholder="Password"
           register={register("password")}
-          error={errors.password}
+          error={errors?.password} // optional chaining
         />
 
         <Button type="submit" label="Signup" />
