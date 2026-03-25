@@ -10,7 +10,7 @@ const Login = lazy(() => import("../pages/login"));
 const Signup = lazy(() => import("../pages/signup"));
 const PostDetails = lazy(() => import("../pages/postdetails"));
 const MyPosts = lazy(() => import("../pages/mypost"));
-const PostForm = lazy(() => import("../pages/postfrom"));
+const PostForm = lazy(() => import("../pages/postform"));
 const NotFound = lazy(() => import("../pages/notfound"));
 
 const AppRoutes = () => {
