@@ -41,21 +41,21 @@ const Signup = () => {
           type="text"
           placeholder="Username"
           register={register("username")}
-          error={errors?.username} // optional chaining
+          error={errors?.username}
         />
 
         <InputField
           type="email"
           placeholder="Email"
           register={register("email")}
-          error={errors?.email} // optional chaining
+          error={errors?.email} 
         />
 
         <InputField
           type="password"
           placeholder="Password"
           register={register("password")}
-          error={errors?.password} // optional chaining
+          error={errors?.password} 
         />
 
         <Button type="submit" label="Signup" />

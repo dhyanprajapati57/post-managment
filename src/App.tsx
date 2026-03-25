@@ -1,4 +1,4 @@
-import "./App.css";
+import "../src/assets/css/App.css";
 
 import Navbar from "./components/navbar";
 import AppRoutes from "./routes/approutes";

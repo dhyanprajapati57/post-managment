@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import type { RootState, AppDispatch } from "../redux/store";
@@ -11,19 +11,25 @@ import ConfirmModal from "../components/commen/confirmmodel";
 
 const MyPosts = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
-  // get user id safely
-  const userId = useSelector((state: RootState) => state.auth.user?.id) as string | undefined;
+  // get user id
+  const userId = useSelector(
+    (state: RootState) => state.auth.user?.id
+  ) as string | undefined;
 
-  // get posts safely
-  const { posts, loading } = useSelector((state: RootState) => state.myPosts ?? { posts: [], loading: false });
+  // get posts
+  const { posts, loading } = useSelector(
+    (state: RootState) =>
+      state.myPosts ?? { posts: [], loading: false }
+  );
 
   const [showModal, setShowModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<number | null>(null);
 
   // Fetch posts
   useEffect(() => {
-    if (!userId) return; 
+    if (!userId) return;
     dispatch(fetchMyPosts(userId));
   }, [dispatch, userId]);
 
@@ -35,27 +41,37 @@ const MyPosts = () => {
 
   // confirm delete
   const confirmDelete = async () => {
-    if (!selectedPost || !userId) return; // guard
+    if (!selectedPost || !userId) return;
 
     try {
-      await dispatch(removePost(selectedPost)); // usually only needs postId
+      await dispatch(removePost(selectedPost));
       setShowModal(false);
       setSelectedPost(null);
 
-      // refresh posts safely
+      // refresh posts
       dispatch(fetchMyPosts(userId));
     } catch (error) {
       console.error("Delete failed", error);
     }
   };
 
-  if (loading) return <p className="p-5 text-center text-gray-600">Loading...</p>;
+  if (loading)
+    return (
+      <p className="p-5 text-center text-gray-600">Loading...</p>
+    );
 
-  if (!posts?.length) return <p className="p-5 text-center text-gray-600">No posts found.</p>;
+  if (!posts?.length)
+    return (
+      <p className="p-5 text-center text-gray-600">
+        No posts found.
+      </p>
+    );
 
   return (
     <div className="p-5">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-5">My Posts</h2>
+      <h2 className="text-2xl font-semibold text-gray-800 mb-5">
+        My Posts
+      </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {posts?.map((p) => (
@@ -83,13 +99,24 @@ const MyPosts = () => {
 
               <Button
                 label="Delete"
-                onClick={() => handleDeleteClick(p?.id ?? 0)}
+                onClick={() =>
+                  handleDeleteClick(p?.id ?? 0)
+                }
               />
             </div>
           </div>
         ))}
       </div>
 
+      {/*  Go to Home Button */}
+      <div className="flex justify-center mt-8">
+        <Button
+          label="Go to Home"
+          onClick={() => navigate("/")}
+        />
+      </div>
+
+      {/* Modal */}
       <ConfirmModal
         message="Are you sure you want to delete this post?"
         onConfirm={confirmDelete}

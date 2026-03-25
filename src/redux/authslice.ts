@@ -1,9 +1,9 @@
-// redux/authslice.ts
+
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 // Define the User interface
 export interface User {
-  id: string;           // Added user ID
+  id: string;           
   name: string;
   username: string;
   email?: string;
