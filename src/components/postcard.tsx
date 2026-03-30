@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "./commen/confirmmodel";
 import type { Post } from "../types/post.types";
@@ -17,6 +17,29 @@ const PostCard = ({ post, onDelete }: Props) => {
   const [dislikes, setDislikes] = useState(post.reactions.dislikes);
   const [showModal, setShowModal] = useState(false);
 
+  //  Track user reaction
+  const [userReaction, setUserReaction] = useState<
+    "like" | "dislike" | null
+  >(null);
+
+  //  Load saved reaction (optional but recommended)
+  useEffect(() => {
+    const savedReaction = localStorage.getItem(`reaction-${post.id}`);
+    if (savedReaction) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUserReaction(savedReaction as "like" | "dislike");
+    }
+  }, [post.id]);
+
+  //  Save reaction
+  const saveReaction = (reaction: "like" | "dislike" | null) => {
+    if (reaction) {
+      localStorage.setItem(`reaction-${post.id}`, reaction);
+    } else {
+      localStorage.removeItem(`reaction-${post.id}`);
+    }
+  };
+
   const checkLogin = () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -27,20 +50,51 @@ const PostCard = ({ post, onDelete }: Props) => {
     return true;
   };
 
-  // Like/dislike handlers
+  //  Like handler
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!checkLogin()) return;
-    setLikes(likes + 1);
+
+    if (userReaction === "like") {
+      // remove like
+      setLikes((prev) => prev - 1);
+      setUserReaction(null);
+      saveReaction(null);
+    } else {
+      // remove dislike if exists
+      if (userReaction === "dislike") {
+        setDislikes((prev) => prev - 1);
+      }
+
+      setLikes((prev) => prev + 1);
+      setUserReaction("like");
+      saveReaction("like");
+    }
   };
 
+  //  Dislike handler
   const handleDislike = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!checkLogin()) return;
-    setDislikes(dislikes + 1);
+
+    if (userReaction === "dislike") {
+      // remove dislike
+      setDislikes((prev) => prev - 1);
+      setUserReaction(null);
+      saveReaction(null);
+    } else {
+      // remove like if exists
+      if (userReaction === "like") {
+        setLikes((prev) => prev - 1);
+      }
+
+      setDislikes((prev) => prev + 1);
+      setUserReaction("dislike");
+      saveReaction("dislike");
+    }
   };
 
-  // Delete handler
+  // 🗑 Delete handler
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowModal(true);
@@ -52,7 +106,9 @@ const PostCard = ({ post, onDelete }: Props) => {
       onClick={() => navigate(`/posts/${post.id}`)}
     >
       {/* Post title */}
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">{post.title}</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        {post.title}
+      </h3>
 
       {/* Post body */}
       <p className="text-gray-600 text-sm mb-3 leading-relaxed line-clamp-3">
@@ -68,7 +124,11 @@ const PostCard = ({ post, onDelete }: Props) => {
       {/* Action buttons */}
       <div className="flex gap-2">
         <button
-          className="flex items-center gap-1 bg-gray-800 text-white text-xs px-3 py-1 rounded-md hover:bg-sky-400 transition"
+          className={`flex items-center gap-1 text-xs px-3 py-1 rounded-md transition ${
+            userReaction === "like"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-800 text-white hover:bg-sky-400"
+          }`}
           onClick={handleLike}
         >
           <ThumbsUp size={14} />
@@ -76,7 +136,11 @@ const PostCard = ({ post, onDelete }: Props) => {
         </button>
 
         <button
-          className="flex items-center gap-1 bg-red-100 text-red-700 text-xs px-3 py-1 rounded-md hover:bg-red-200 transition"
+          className={`flex items-center gap-1 text-xs px-3 py-1 rounded-md transition ${
+            userReaction === "dislike"
+              ? "bg-red-600 text-white"
+              : "bg-red-100 text-red-700 hover:bg-red-200"
+          }`}
           onClick={handleDislike}
         >
           <ThumbsDown size={14} />
@@ -102,7 +166,7 @@ const PostCard = ({ post, onDelete }: Props) => {
             setShowModal(false);
           }}
           onCancel={() => setShowModal(false)}
-          showModal={false}
+          showModal={showModal}
         />
       )}
     </div>
