@@ -12,6 +12,7 @@ const PostDetails = lazy(() => import("../pages/postdetails"));
 const MyPosts = lazy(() => import("../pages/mypost"));
 const PostForm = lazy(() => import("../pages/postform"));
 const NotFound = lazy(() => import("../pages/notfound"));
+const About = lazy(() => import("../pages/about")); // 
 
 const AppRoutes = () => {
   return (
@@ -94,6 +95,14 @@ const AppRoutes = () => {
           </Suspense>
         }
       />
+      <Route
+  path="/about"
+  element={
+    <Suspense fallback={<Loader />}>
+      <About />
+    </Suspense>
+  }
+/>
 
     </Routes>
   );

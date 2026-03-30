@@ -3,7 +3,11 @@ import { logout } from "../redux/authslice";
 import { Link } from "react-router-dom";
 import type { RootState } from "../redux/store";
 
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -13,9 +17,12 @@ const Navbar = () => {
     <nav className="flex justify-between items-center px-8 py-3 bg-gray-900 text-white shadow-md">
       {/* Logo */}
       <div>
-        <span className="text-lg font-bold tracking-wide cursor-pointer">
+        <Link
+          to="/about"
+          className="text-lg font-bold tracking-wide cursor-pointer hover:text-sky-400 transition-colors duration-200"
+        >
           Post Management Dashboard
-        </span>
+        </Link>
       </div>
 
       {/* Right Links */}
