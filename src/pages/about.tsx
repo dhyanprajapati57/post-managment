@@ -1,7 +1,20 @@
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 const About = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gray-100 px-6 py-10">
       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-8">
+
+        {/* 🔙 Back Button */}
+        <Button
+          onClick={() => navigate("/")}
+          className="mb-4 text-sm bg-gray-800 text-white px-4 py-1.5 rounded-md hover:bg-sky-400 transition"
+        >
+          ← Back to Home
+        </Button>
+
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
           About Post Management Dashboard
         </h1>
@@ -13,7 +26,7 @@ const About = () => {
         </p>
 
         <h2 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
-           Features
+          Features
         </h2>
         <ul className="list-disc pl-5 text-gray-600 space-y-1">
           <li>Create and manage posts</li>
@@ -25,7 +38,7 @@ const About = () => {
         </ul>
 
         <h2 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
-           Tech Stack
+          Tech Stack
         </h2>
         <ul className="list-disc pl-5 text-gray-600 space-y-1">
           <li>React + TypeScript</li>
@@ -36,7 +49,7 @@ const About = () => {
         </ul>
 
         <h2 className="text-xl font-semibold mt-6 mb-2 text-gray-800">
-           Purpose
+          Purpose
         </h2>
         <p className="text-gray-600">
           This project is built to demonstrate a complete CRUD system with user
